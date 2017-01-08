@@ -38,3 +38,4 @@ abaixo da caixa de pesquisa, escolha um desses nomes para fazer a pesquisa teste
 * [Google](http://www.google.com/) - Pesquisa.
 * [W3Schools](http://www.w3schools.com/) - Tutoriais.
 * [Stack Overflow](http://stackoverflow.com/) - Resolução de bugs.
+* [Mitchell Hudson](https://www.youtube.com/playlist?list=PLoN_ejT35AEhbFswEKW36LxzyXJs7xCWS) - Vídeo Tutorial que me deu a base para criar esse sistema.
