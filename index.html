@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Busca de Professores</title>
+
+  <meta name="description" content="Sistema feito para aprender a usar o Parse.com">
+  <meta name="author" content="GIDERCLAY ZEBALLOS - +55 61 99551-2709!">
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <script src="js/scripts.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> 
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Latest compiled Parse -->
+  <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.js"></script>
+  <script src="js/star-rating.min.js"></script>
+  <link href="css/star-rating.min.css" rel="stylesheet">
+
+
+  <style>
+    body {
+      font-family: 'Raleway', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <div class="page-header">
+      <h1>
+       Sistema de busca de professores
+     </h1>
+   </div>
+   <div>
+     <form id="form_busca">
+      <div class="input-group">
+        <input type="text" id="campo_nome" placeholder="Buscar Professores" autofocus autocomplete="off">
+      </div>
+    </form>
+  </div>
+  <hr>
+  <!-- RENDERIZAR --> 
+  <div id="resultado_busca" style="display:none">
+    <div id="detalhes_professor" class="well" data-id="">
+      <div class="row">
+        <div class="col-xs-2">
+          <img id="imagem_professor" src="" class="img-circle img-responsive">
+        </div>
+        <div class="col-xs-4">
+          <h2 id="nome_professor" style="color:orange"></h2>
+          <h3 id="materia_professor" style="color:#808080"></h3>
+          <input id="nota_professor" name="nota_professor" value="" class="rating" data-step="0.1" data-size="xs" data-show-clear="false" data-show-caption="false" disabled="true">
+        </div>
+        <div class="row col-xs-6">
+          <p class="text-left"><strong>Currículo</strong>
+            <p id="curriculo_professor" style="color:#808080"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+       <tr>
+        <th>
+         Professores cadastrados na base de dados:
+       </th>
+
+     </tr>
+   </thead>
+   <tbody id="lista_nomes">
+
+   </tbody>
+ </table>
+ <hr>
+ <div class="row col-xs-12">
+  <center>(c) 2016 - Giderclay ZEBALLOS - (61) 99551-2709</center>
+</div>
+</div>
+</div>
+</div>
+<!-- 
+// LÓGICA DO SISTEMA
+-->
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    Parse.initialize("SU0myMIe1AUitLKar0mum8My8RbQ87lEaRjjKDgh",
+      "GtvnNXChRLZRYBbWxNy9fM0LPloMfpYICCtMdJIL");
+    Parse.serverURL = 'https://parseapi.back4app.com/'
+      //conecta com a classe Professores
+      var Professores = Parse.Object.extend("Professores");
+//Buscar professores
+function BuscarProfessores() {   
+ $('#campo_nome').capitalize();
+ var Busca = new Parse.Query(Professores);
+ var campo_nome = $("#campo_nome").val();
+ Busca.startsWith("nome", campo_nome);
+ Busca.matches("nome", campo_nome);
+ Busca.first({
+   success: function(buscar) {
+     $("#resultado_busca").show();
+     var nome = buscar.get("nome");
+     var materia = buscar.get("materia");
+     var nota = buscar.get("nota");
+     var curriculo = buscar.get("curriculo");
+     if (buscar.get("imagem")) { 
+      var file = buscar.get("imagem");
+      var url = file.url();
+      $("#imagem_professor").attr("src", url); };
+      $("#nome_professor").text( nome );
+      $("#materia_professor").text( materia );
+      $("#nota_professor").rating("update", nota);
+      $("#curriculo_professor").html( curriculo );
+      console.log("RESULTADO DA BUSCA: ok!");
+    },
+    error: function(error) {
+      console.log("Erro caralho: " + error.message);
+    }
+  });
+}
+$("#form_busca").keyup(function()
+ { BuscarProfessores() }); 
+
+//Lista dos nomes cadastrados
+function ListarProfessores() {
+  var lista = new Parse.Query(Professores);
+  lista.find({
+    success: function(listagem) {
+      var saida0 = "";
+      for (var i in listagem) {
+        var nome_lista = listagem[i].get("nome");
+        saida0 += "<tr>";
+        saida0 += "<td>";
+        saida0 += nome_lista
+        saida0 += "</td>";
+        saida0 += "</tr>";
+      }
+      $("#lista_nomes").html(saida0);
+      console.log("Função: ListarProfessores(): OK !");
+    },
+    error: function(error) {
+      console.log("Erro função lista: " + error.message);
+    }
+  });
+}
+ListarProfessores();
+//fim
+});     
+// CAPITALIZAR A PRIMEIRA LETRA DO FORM PARA FAZER A BUSCA CORRETA.
+jQuery.fn.capitalize = function() {
+  $(this[0]).keyup(function(event) {
+    var box = event.target;
+    var txt = $(this).val();
+    var stringStart = box.selectionStart;
+    var stringEnd = box.selectionEnd;
+    $(this).val(txt.replace(/^(.)|(\s|\-)(.)/g, function($word) {
+      return $word.toUpperCase();
+    }));
+    box.setSelectionRange(stringStart , stringEnd);
+  });
+
+  return this;
+}
+
+</script>
+
+</body>
+</html>
